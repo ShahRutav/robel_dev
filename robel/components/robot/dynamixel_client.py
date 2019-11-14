@@ -33,6 +33,7 @@ ADDR_PRESENT_POS_VEL_CUR = 126
 ADDR_PRESENT_VOLTAGE = 144
 ADDR_PRESENT_TEMPERATURE = 146
 ADDR_PRESENT_VOL_TEMP = 144
+ADDR_HARDWARE_ERROR_STATUS = 70
 
 # Data Byte Length
 LEN_PRESENT_POSITION = 4
@@ -263,6 +264,14 @@ class DynamixelClient:
                 comm_result, dxl_error, motor_id, context='write_byte')
             if not success:
                 errored_ids.append(motor_id)
+                 # read hardware error status
+                hardware_error_status, result, error = self.packet_handler.read1ByteTxRx(
+                    self.port_handler, motor_id, ADDR_HARDWARE_ERROR_STATUS)
+                # Try rebooting the motor if hardware error
+                if hardware_error_status>0:
+                    result, error = self.packet_handler.reboot(self.port_handler, motor_id)
+                    logging.error('> Hardwre error status for motor ID {}: {}. Rebooting motor: {}'.format\
+                        (motor_id, hardware_error_status, 'success' if result==0 else 'failed'))
         return errored_ids
 
     def sync_write(self, motor_ids: Sequence[int],
