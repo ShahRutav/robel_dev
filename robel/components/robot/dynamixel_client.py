@@ -23,7 +23,7 @@ import numpy as np
 
 PROTOCOL_VERSION = 2.0
 
-# The following addresses assume XH motors.
+# The following addresses assume XM motors.
 ADDR_TORQUE_ENABLE = 64
 ADDR_GOAL_POSITION = 116
 ADDR_PRESENT_POSITION = 132
@@ -39,9 +39,10 @@ LEN_PRESENT_POS_VEL_CUR = 10
 LEN_GOAL_POSITION = 4
 
 DEFAULT_POS_SCALE = 2.0 * np.pi / 4096  # 0.088 degrees
-# See http://emanual.robotis.com/docs/en/dxl/x/xh430-v210/#goal-velocity
+# http://emanual.robotis.com/docs/en/dxl/x/xm430-w210/#goal-velocity
 DEFAULT_VEL_SCALE = 0.229 * 2.0 * np.pi / 60.0  # 0.229 rpm
-DEFAULT_CUR_SCALE = 1.34
+# http://emanual.robotis.com/docs/en/dxl/x/xm430-w210/#goal-current
+DEFAULT_CUR_SCALE = 0.00269
 
 
 def dynamixel_cleanup_handler():
