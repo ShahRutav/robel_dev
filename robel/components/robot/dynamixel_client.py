@@ -536,7 +536,7 @@ if __name__ == '__main__':
                 dxl_client.write_desired_pos(motors, way_point)
             read_start = time.time()
             pos_now, vel_now, cur_now = dxl_client.read_pos_vel_cur()
-            # vol_now, temp_now = dxl_client.read_vol_temp()
+            vol_now, temp_now = dxl_client.read_vol_temp()
 
 
             if step % 5 == 0:
@@ -545,5 +545,5 @@ if __name__ == '__main__':
                 print('> Pos: {}'.format(pos_now.tolist()))
                 print('> Vel: {}'.format(vel_now.tolist()))
                 print('> Cur: {}'.format(cur_now.tolist()))
-                # print('> Vol: {}'.format(vol_now.tolist()))
-                # print('> Tmp: {}'.format(temp_now.tolist()))
+                print('> Vol: {}'.format(vol_now.tolist()))
+                print('> Tmp: {}'.format(temp_now.tolist()))
