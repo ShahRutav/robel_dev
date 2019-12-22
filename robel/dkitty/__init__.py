@@ -82,3 +82,25 @@ register(
     class_path='robel.dkitty.walk:DKittyWalkRandomDynamics',
     max_episode_steps=_WALK_EPISODE_LEN)
 
+
+#===============================================================================
+# Carry tasks
+#===============================================================================
+
+# Default number of steps per episode.
+_CARRY_EPISODE_LEN = 16  # 160*40*2.5ms = 16s
+
+register(
+    env_id='DKittyCarryFixed-v0',
+    class_path='robel.dkitty.carry:DKittyCarryFixed',
+    max_episode_steps=_CARRY_EPISODE_LEN)
+
+register(
+    env_id='DKittyCarryRandom-v0',
+    class_path='robel.dkitty.carry:DKittyCarryRandom',
+    max_episode_steps=_WALK_EPISODE_LEN)
+
+register(
+    env_id='DKittyCarryRandomDynamics-v0',
+    class_path='robel.dkitty.carry:DKittyCarryRandomDynamics',
+    max_episode_steps=_CARRY_EPISODE_LEN)

@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<mujoco model="dkitty_carry-v2.2">
+  <compiler meshdir="./../../robel-scenes/dkitty" texturedir="../../robel-scenes/dkitty"/>
+  <include file="./../../robel-scenes/scenes/basic_scene.xml"/>
+  <include file="./../../robel-scenes/dkitty/assets/dependenciesA_xh-v2.2.xml"/>
+  <asset>
+    <hfield name="hf1" size="4.5 4.5 1 .1" nrow="120" ncol="120"/>
+  </asset>
+  <worldbody>
+    <site name="target" pos="0 1 0" type="cylinder" size=".5 .005 0" rgba="0 1 0 1"/>
+    <site name="heading" pos="0 1 0.25" type="cylinder" size=".05 .25 0" rgba="1 1 0 1"/>
+    <site name="payload" type="ellipsoid" size=".1 .08 .05" rgba="0 1 0 .4" pos="0 1 0.25"/>
+
+    <geom name="hfield1" type="hfield" hfield="hf1" pos="0 0 -.005" material="MatPlane" rgba=".7 .7 .7 1"/>
+    <body name="kitty_frame" pos="0 0 .32">
+      <camera name="trackingZ" pos="0 0 3" zaxis="0 0 3" mode="trackcom"/>
+      <camera name="trackingY" pos="1.5 1.5 .35" xyaxes="-.7 1 0 0 -.3 1" mode="trackcom"/>
+      <site name="torso" type="box" size=".090 .150 .007" group="4"/>
+      <geom type="sphere" size="0.010" mass="0.010" group="4"/>
+      <joint name="Tx" pos="0 0 0" axis="1 0 0" limited="true" type="slide" range="-10 10"/>
+      <joint name="Ty" pos="0 0 0" axis="0 1 0" limited="true" type="slide" range="-10 10"/>
+      <joint name="Tz" pos="0 0 0" axis="0 0 1" limited="true" type="slide" range="-2 2"/>
+      <joint name="Rx" pos="0 0 0" axis="1 0 0" limited="true" range="-3.14 3.14"/>
+      <joint name="Ry" pos="0 0 0" axis="0 1 0" limited="true" range="-3.14 3.14"/>
+      <joint name="Rz" pos="0 0 0" axis="0 0 1" limited="true" range="-3.14 3.14"/>
+      <include file="./../../robel-scenes/dkitty/assets/chainA_xh-v2.2.xml"/>
+    </body>
+
+    <body name="payload" pos="0 0 .4">
+        <geom type="box" size=".07 .055 .03" rgba=".5 .4 .3 1"/>
+        <geom type="box" size=".07 .055 .03" rgba=".5 .4 .3 1" group="4"/> <!-- for inertial calculation -->
+        <freejoint/>
+    </body>
+  </worldbody>
+</mujoco>
