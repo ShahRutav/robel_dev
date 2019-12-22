@@ -72,7 +72,8 @@ Run `source ~/.bashrc` afterwards.
 
 #### 2.2 ROBEL
 
-ROBEL requires Python 3.5 or higher. You can install ROBEL by running:
+ROBEL requires Python 3.5 or higher. You can install ROBEL by running: 	(*Note: This will install the release repository. If you are interested in the dev branch please follow the instruction below on direct installation from this dev-repository*)
+
 
 ``` bash
 pip install robel
@@ -84,8 +85,8 @@ interfering with system dependencies or existing packages.
 Alternatively, you can install directly from the repository by running:
 
 ```bash
-git clone --recurse-submodules https://github.com/google-research/robel.git
-pip install -e robel/
+git clone --recurse-submodules https://github.com/vikashplus/robel_dev.git
+pip install -e robel_dev
 ```
 
 To run on hardware, additionally install the [DynamixelSDK] Python API:
