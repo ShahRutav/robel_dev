@@ -30,7 +30,7 @@ from robel.utils.configurable import configurable
 from robel.utils.math_utils import calculate_cosine
 from robel.utils.resources import get_asset_path
 
-DKITTY_ASSET_PATH = 'robel/dkitty/assets/dkitty_walk-v0.xml'
+DKITTY_ASSET_PATH = 'robel/dkitty/assets/dkitty_walk-v2.2.xml'
 
 DEFAULT_OBSERVATION_KEYS = (
     'root_pos',
