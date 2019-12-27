@@ -18,7 +18,8 @@ from typing import Any, Dict, Optional, Union
 
 from robel.components.builder import ComponentBuilder
 from robel.components.tracking.tracker import TrackerComponent
-from robel.components.tracking.vr_tracker import VrTrackerComponent
+# from robel.components.tracking.vr_tracker import VrTrackerComponent
+from robel.components.tracking.opti_tracker import OTTrackerComponent
 
 
 class TrackerComponentBuilder(ComponentBuilder):
@@ -31,7 +32,7 @@ class TrackerComponentBuilder(ComponentBuilder):
     def build(self, *args, **kwargs):
         """Builds the component."""
         if self._vr_tracker_ids:
-            return VrTrackerComponent(
+            return OTTrackerComponent(
                 *args, groups=self.group_configs, **kwargs)
         return TrackerComponent(*args, groups=self.group_configs, **kwargs)
 
@@ -50,6 +51,7 @@ class TrackerComponentBuilder(ComponentBuilder):
     def add_tracker_group(
             self,
             group_name: str,
+            # opti_tracker_id: Union[str, int],
             vr_tracker_id: Union[str, int],
             sim_params: Optional[Dict[str, Any]] = None,
             hardware_params: Optional[Dict[str, Any]] = None,
@@ -70,6 +72,9 @@ class TrackerComponentBuilder(ComponentBuilder):
                 movement is mimicked to the simulation.
         """
         self.add_group(group_name, **sim_params)
+        # if opti_tracker_id is not None:
+        #     pass
+        
         if vr_tracker_id is not None:
             self.set_vr_tracker_id(group_name, vr_tracker_id)
 

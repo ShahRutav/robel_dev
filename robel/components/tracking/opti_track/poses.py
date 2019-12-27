@@ -156,34 +156,42 @@ class VrPoseBatch:
     """Represents a batch of poses calculated by the OpenVR system."""
 
     def __init__(self,
-                 vr_system,
+                 ot_system,
                  coord_system: VrCoordinateSystem,
                  time_from_now: float = 0.0):
         """Initializes a new pose batch."""
-        self._vr_system = vr_system
+        # self._vr_system = vr_system
         self._coord_system = coord_system
         # Query poses for all devices.
-        self.poses = self._vr_system.getDeviceToAbsoluteTrackingPose(
-            openvr.TrackingUniverseStanding, time_from_now,
-            openvr.k_unMaxTrackedDeviceCount)
+        data1 = ot_system.read()
+        data2 = ot_system.read()
+        self.poses = np.concatenate([data1, data2])
+        
+        # self.poses = self._vr_system.getDeviceToAbsoluteTrackingPose(
+        #     openvr.TrackingUniverseStanding, time_from_now,
+        #     openvr.k_unMaxTrackedDeviceCount)
 
-    def get_pos_rot(self, device: VrDevice,
+    def get_pos_rot(self, device=None,
                     raw: bool = False) -> Tuple[np.ndarray, np.ndarray]:
         """Returns the 4x4 pose matrix of the given device."""
-        if not self.poses[device.index].bPoseIsValid:
-            pos, rot = self._coord_system.get_cached_pos_rot(device.index)
-        else:
-            vr_pose = np.ctypeslib.as_array(
-                self.poses[device.index].mDeviceToAbsoluteTracking[:],
-                shape=(3, 4))
-            # Check that the pose is valid.
-            # If all of the translations are 0, get from the cache.
-            assert vr_pose.shape == (3, 4)
-            pos, rot = self._coord_system.process_from_vr(
-                device.index, vr_pose[:, 3], vr_pose[:, :3])
-        if not raw:
-            pos, rot = self._coord_system.to_user_space(device.index, pos, rot)
-        return pos, rot
+        # if not self.poses[device.index].bPoseIsValid:
+        #     pos, rot = self._coord_system.get_cached_pos_rot(device.index)
+        # else:
+        #     vr_pose = np.ctypeslib.as_array(
+        #         self.poses[device.index].mDeviceToAbsoluteTracking[:],
+        #         shape=(3, 4))
+        #     # Check that the pose is valid.
+        #     # If all of the translations are 0, get from the cache.
+        #     assert vr_pose.shape == (3, 4)
+        #     pos, rot = self._coord_system.process_from_vr(
+        #         device.index, vr_pose[:, 3], vr_pose[:, :3])
+        # if not raw:
+        #     pos, rot = self._coord_system.to_user_space(device.index, pos, rot)
+
+        # t, id, x, y, z, q0, q1, q2, q3
+        pos = self.poses[2:5]
+        quat = self.poses[5:9]
+        return pos, quat2mat(quat)
 
     def get_pos_euler(
             self,

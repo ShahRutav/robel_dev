@@ -13,20 +13,41 @@ from opti_tracker import OTTrackerComponent
 from robel.simulation.sim_scene import SimScene
 from robel.simulation.sim_scene import SimScene, SimBackend
 
-sim = SimScene.create(model_handle = '/home/vik/Libraries/robel_dev/robel/dkitty/assets/dkitty_orient-v0.xml', backend=SimBackend.MUJOCO_PY)
+sim = SimScene.create(model_handle = '/home/aravind/Projects/dkitty/Libraries/robel_dev/robel/dkitty/assets/dkitty_orient-v0.xml', backend=SimBackend.MUJOCO_PY)
 
 
 from robel.components.tracking import TrackerComponentBuilder, TrackerState
 tracker_builder = TrackerComponentBuilder()
-configure_tracker(tracker_builder)
-builder.add_tracker_group(
-            'target',
-            vr_tracker_id=self._target_tracker_id,
+# configure_tracker(tracker_builder)
+tracker_builder.add_tracker_group(
+            'torso',
+            vr_tracker_id=0,
+            opti_tracker_id=None,
             sim_params=dict(
-                element_name='target',
-                element_type='site',
+                element_name='torso',
+                element_type='joint',
+                qpos_indices=range(6),
             ),
-            mimic_xy_only=True)
+            hardware_params=dict(
+                is_origin=True,
+                tracked_rotation_offset=(-1.57, 0, 1.57),
+            )
+            )
+
+tracker = tracker_builder.build(sim_scene=sim)
+state = tracker.get_state('torso')
+print(state.pos)
+print(state.rot)
+# import ipdb; ipdb.set_trace()
+
+# builder.add_tracker_group(
+#             'target',
+#             vr_tracker_id=self._target_tracker_id,
+#             sim_params=dict(
+#                 element_name='target',
+#                 element_type='site',
+#             ),
+#             mimic_xy_only=True)
 
 # tracker_builder.set_state({
 #             'torso': TrackerState(
@@ -40,4 +61,4 @@ builder.add_tracker_group(
 #                     0,
 #                 ])),
 
-gc = OTTrackerGroupConfig(sim_scene = sim )
+# gc = OTTrackerGroupConfig(sim_scene = sim )

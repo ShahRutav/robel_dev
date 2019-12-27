@@ -33,7 +33,8 @@ class VrDevice:
 
     def is_connected(self) -> bool:
         """Returns whether the device is connected."""
-        return self._vr_system.isTrackedDeviceConnected(self._index)
+        return True
+        # return self._vr_system.isTrackedDeviceConnected(self._index)
 
     def get_serial(self) -> str:
         """Returns the serial number of the device."""
@@ -57,13 +58,14 @@ class VrDevice:
         return info
 
     def _get_string(self, prop_type) -> str:
-        """Returns a string property of the device."""
-        if prop_type in self._value_cache:
-            return self._value_cache[prop_type]
-        value = self._vr_system.getStringTrackedDeviceProperty(
-            self._index, prop_type).decode('utf-8')
-        self._value_cache[prop_type] = value
-        return value
+        # """Returns a string property of the device."""
+        # if prop_type in self._value_cache:
+        #     return self._value_cache[prop_type]
+        # value = self._vr_system.getStringTrackedDeviceProperty(
+        #     self._index, prop_type).decode('utf-8')
+        # self._value_cache[prop_type] = value
+        # return value
+        return 'meh'
 
     def _get_bool(self, prop_type) -> bool:
         """Returns a boolean property of the device."""

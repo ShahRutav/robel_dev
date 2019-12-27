@@ -103,7 +103,8 @@ class OTClient:
             update_plot: If True, updates an existing plot.
         """
         # pose_batch = VrPoseBatch(self._vr_system, self._coord_system, time_from_now)
-        pose_batch = self.opti_pose_batch(self._ot_system, self._coord_system, time_from_now)
+        pose_batch = VrPoseBatch(self._ot_system, self._coord_system, time_from_now)
+        # pose_batch = self.opti_pose_batch(self._ot_system, self._coord_system, time_from_now)
         self._last_pose_batch = pose_batch
 
         if update_plot and self._plot and self._plot.is_open:
