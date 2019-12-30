@@ -88,7 +88,7 @@ register(
 #===============================================================================
 
 # Default number of steps per episode.
-_CARRY_EPISODE_LEN = 16  # 160*40*2.5ms = 16s
+_CARRY_EPISODE_LEN = 60  # 160*40*2.5ms = 16s
 
 register(
     env_id='DKittyCarryFixed-v0',
@@ -98,7 +98,7 @@ register(
 register(
     env_id='DKittyCarryRandom-v0',
     class_path='robel.dkitty.carry:DKittyCarryRandom',
-    max_episode_steps=_WALK_EPISODE_LEN)
+    max_episode_steps=_CARRY_EPISODE_LEN)
 
 register(
     env_id='DKittyCarryRandomDynamics-v0',

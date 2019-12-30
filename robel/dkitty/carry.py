@@ -34,7 +34,7 @@ from robel.utils.resources import get_asset_path
 DKITTY_ASSET_PATH = 'robel/dkitty/assets/dkitty_carry-v2.2.xml'
 
 DEFAULT_OBSERVATION_KEYS = (
-    'payload_error',
+    'payload_error', 'payload_height'
 )
 
 
@@ -47,6 +47,7 @@ class BaseDKittyCarry(BaseDKittyWalk, metaclass=abc.ABCMeta):
                  target_tracker_id: Optional[Union[str, int]] = None,
                  heading_tracker_id: Optional[Union[str, int]] = None,
                  payload_tracker_id: Optional[Union[str, int]] = None,
+                 deliver_tracker_id: Optional[Union[str, int]] = None,
                  frame_skip: int = 40,
                  upright_threshold: float = 0.9,
                  upright_reward: float = 1,
@@ -73,17 +74,22 @@ class BaseDKittyCarry(BaseDKittyWalk, metaclass=abc.ABCMeta):
         """
         self._target_tracker_id = target_tracker_id
         self._heading_tracker_id = heading_tracker_id
+        self._deliver_tracker_id = deliver_tracker_id
         self._payload_tracker_id = payload_tracker_id
         if self._heading_tracker_id is None:
             self._heading_tracker_id = self._target_tracker_id
+        if self._deliver_tracker_id is None:
+            self._deliver_tracker_id = self._target_tracker_id
 
         super().__init__(
             asset_path = DKITTY_ASSET_PATH)
         self._observation_keys += DEFAULT_OBSERVATION_KEYS # append to observations
+        if self._payload_tracker_id is None:
+            self._payload_tracker_id = self._torso_tracker_id
 
         self._initial_target_pos = np.zeros(3)
         self._initial_heading_pos = None
-        self._initial_payload_pos = None
+        self._initial_deliver_pos = None
 
     def _configure_tracker(self, builder: TrackerComponentBuilder):
         """Configures the tracker component."""
@@ -96,6 +102,14 @@ class BaseDKittyCarry(BaseDKittyWalk, metaclass=abc.ABCMeta):
                 element_type='site',
             ),
             mimic_xy_only=True)
+        builder.add_tracker_group(
+            'deliver',
+            vr_tracker_id=self._deliver_tracker_id,
+            sim_params=dict(
+                element_name='deliver',
+                element_type='site',
+            ),
+            mimic_xy_only=True)
 
     def _reset(self):
         """Resets the environment."""
@@ -104,19 +118,19 @@ class BaseDKittyCarry(BaseDKittyWalk, metaclass=abc.ABCMeta):
         # If no heading is provided, head towards the target.
         target_pos = self._initial_target_pos
         heading_pos = self._initial_heading_pos
-        payload_pos = self._initial_payload_pos
+        deliver_pos = self._initial_deliver_pos
         if heading_pos is None:
             heading_pos = target_pos.copy()
             heading_pos[2] = 0.25
-        if payload_pos is None:
-            payload_pos = heading_pos
+        if deliver_pos is None:
+            deliver_pos = heading_pos.copy()
 
         # Set the tracker locations.
         self.tracker.set_state({
             'torso': TrackerState(pos=np.zeros(3), rot=np.identity(3)),
             'target': TrackerState(pos=target_pos),
             'heading': TrackerState(pos=heading_pos),
-            'payload': TrackerState(pos=payload_pos),
+            'deliver': TrackerState(pos=deliver_pos),
         })
 
     def get_obs_dict(self) -> Dict[str, np.ndarray]:
@@ -127,8 +141,9 @@ class BaseDKittyCarry(BaseDKittyWalk, metaclass=abc.ABCMeta):
             dictionary if `observation_keys` isn't set.
         """
         obs_dict = super().get_obs_dict()
-        payload_state = self.tracker.get_state(['payload'])[0]
-        obs_dict.update({'payload_error': obs_dict['target_pos'] - payload_state.pos[:2]}) 
+        payload_state, deliver_state = self.tracker.get_state(['payload', 'deliver'])
+        obs_dict.update({'payload_error': deliver_state.pos[:2] - payload_state.pos[:2]}) 
+        obs_dict.update({'payload_height': payload_state.pos[2]}) 
         return obs_dict
 
 
@@ -141,7 +156,9 @@ class BaseDKittyCarry(BaseDKittyWalk, metaclass=abc.ABCMeta):
         reward_dict = super().get_reward_dict(action, obs_dict)
         
         payload_xy_dist = np.linalg.norm(obs_dict['payload_error'])
-        reward_dict.update({'payload': -10*payload_xy_dist})
+        payload_drop = np.linalg.norm(0.4 - obs_dict['payload_height'])
+        reward_dict.update({'payload_dist': -10*payload_xy_dist})
+        reward_dict.update({'payload_drop': -10*payload_drop})
         reward_dict['bonus_small'] += 5 * (payload_xy_dist < 0.5)
         reward_dict['bonus_big'] *= (payload_xy_dist < 0.5)
         return reward_dict
@@ -157,12 +174,16 @@ class BaseDKittyCarry(BaseDKittyWalk, metaclass=abc.ABCMeta):
             ('success', reward_dict['bonus_big'] > 0.0),
         ))
 
-    # TODO: Should account for object on the ground
-    # def get_done(
-    #     self,
-    #     obs_dict: Dict[str, np.ndarray],
-    #     reward_dict: Dict[str, np.ndarray],
-    # ) -> np.ndarray:
+    def get_done(
+            self,
+            obs_dict: Dict[str, np.ndarray],
+            reward_dict: Dict[str, np.ndarray],
+    ) -> np.ndarray:
+        """Returns whether the episode should terminate."""
+        kitty_fall = obs_dict[self._upright_obs_key] < self._upright_threshold
+        object_fall = obs_dict["payload_height"] < 0.100
+        # return object_fall or kitty_fall
+        return kitty_fall
 
 
 @configurable(pickleable=True)

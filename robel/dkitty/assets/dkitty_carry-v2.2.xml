@@ -9,7 +9,7 @@
   <worldbody>
     <site name="target" pos="0 1 0" type="cylinder" size=".5 .005 0" rgba="0 1 0 1"/>
     <site name="heading" pos="0 1 0.25" type="cylinder" size=".05 .25 0" rgba="1 1 0 1"/>
-    <site name="payload" type="ellipsoid" size=".1 .08 .05" rgba="0 1 0 .4" pos="0 1 0.25"/>
+    <site name="deliver" type="ellipsoid" size=".1 .08 .05" rgba="0 1 0 .4" pos="0 1 0.25"/>
 
     <geom name="hfield1" type="hfield" hfield="hf1" pos="0 0 -.005" material="MatPlane" rgba=".7 .7 .7 1"/>
     <body name="kitty_frame" pos="0 0 .32">
@@ -27,8 +27,19 @@
     </body>
 
     <body name="payload" pos="0 0 .4">
-        <geom type="box" size=".07 .055 .03" rgba=".5 .4 .3 1"/>
-        <geom type="box" size=".07 .055 .03" rgba=".5 .4 .3 1" group="4"/> <!-- for inertial calculation -->
+        <!-- <geom type="ellipsoid" size=".07 .055 .045" rgba=".5 .4 .3 1"/>
+        <geom type="ellipsoid" size=".07 .055 .045" rgba=".5 .4 .3 1" group="4"/> -->
+
+        <geom type="cylinder" size=".025 .075" pos="0 0 .02" rgba=".5 .4 .3 1"/>
+        <geom type="cylinder" size=".025 .075" pos="0 0 .02" rgba=".5 .4 .3 1" group="4"/>
+
+        <!-- <geom type="sphere" condim="6" size=".06" pos="0 0 .0" rgba=".5 .4 .3 1"/>
+        <geom type="sphere" condim="6" size=".06" pos="0 0 .0" rgba=".5 .4 .3 1" group="4"/> -->
+        
+        
+        
+        <site name="payload" type="sphere" size=".005" pos="0 0 .02"/>
+
         <freejoint/>
     </body>
   </worldbody>
