@@ -113,7 +113,10 @@ class BaseDKittyCarry(BaseDKittyWalk, metaclass=abc.ABCMeta):
 
     def _reset(self):
         """Resets the environment."""
-        self._reset_dkitty_standing()
+        squat_pos = np.mean(self.robot.groups['dkitty'].actuator_range, axis=1)
+        squat_pos[1] = 0
+        squat_pos[4] = 0
+        self._reset_dkitty_standing(kitty_pos=squat_pos)
 
         # If no heading is provided, head towards the target.
         target_pos = self._initial_target_pos
@@ -156,11 +159,13 @@ class BaseDKittyCarry(BaseDKittyWalk, metaclass=abc.ABCMeta):
         reward_dict = super().get_reward_dict(action, obs_dict)
         
         payload_xy_dist = np.linalg.norm(obs_dict['payload_error'])
-        payload_drop = np.linalg.norm(0.4 - obs_dict['payload_height'])
-        reward_dict.update({'payload_dist': -10*payload_xy_dist})
-        reward_dict.update({'payload_drop': -10*payload_drop})
-        reward_dict['bonus_small'] += 5 * (payload_xy_dist < 0.5)
-        reward_dict['bonus_big'] *= (payload_xy_dist < 0.5)
+        payload_height = np.linalg.norm(0.4 - obs_dict['payload_height'])
+        reward_dict.update({'payload_dist': -4*payload_xy_dist})
+        reward_dict.update({'payload_height': -5*payload_height})
+        reward_dict.update({'bonus_pld_small': 5*(payload_xy_dist < 0.5)})
+        reward_dict.update({'bonus_pld_big' : 10*(payload_xy_dist < 0.25)})
+
+        # reward_dict['upright'] *= 10 # uncomment for finetuning
         return reward_dict
 
     def get_score_dict(
@@ -180,10 +185,11 @@ class BaseDKittyCarry(BaseDKittyWalk, metaclass=abc.ABCMeta):
             reward_dict: Dict[str, np.ndarray],
     ) -> np.ndarray:
         """Returns whether the episode should terminate."""
-        kitty_fall = obs_dict[self._upright_obs_key] < self._upright_threshold
-        object_fall = obs_dict["payload_height"] < 0.100
-        # return object_fall or kitty_fall
-        return kitty_fall
+        kitty_upright = obs_dict[self._upright_obs_key] < self._upright_threshold
+        kitty_fall = obs_dict["root_pos"][0][2]<-.100
+        object_fall = obs_dict["payload_height"] < 0.250
+        # return object_fall or kitty_fall # uncomment for finetuning
+        return kitty_upright
 
 
 @configurable(pickleable=True)

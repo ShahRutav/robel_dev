@@ -26,21 +26,19 @@
       <include file="./../../robel-scenes/dkitty/assets/chainA_xh-v2.2.xml"/>
     </body>
 
-    <body name="payload" pos="0 0 .4">
-        <!-- <geom type="ellipsoid" size=".07 .055 .045" rgba=".5 .4 .3 1"/>
-        <geom type="ellipsoid" size=".07 .055 .045" rgba=".5 .4 .3 1" group="4"/> -->
-
-        <geom type="cylinder" size=".025 .075" pos="0 0 .02" rgba=".5 .4 .3 1"/>
-        <geom type="cylinder" size=".025 .075" pos="0 0 .02" rgba=".5 .4 .3 1" group="4"/>
-
-        <!-- <geom type="sphere" condim="6" size=".06" pos="0 0 .0" rgba=".5 .4 .3 1"/>
-        <geom type="sphere" condim="6" size=".06" pos="0 0 .0" rgba=".5 .4 .3 1" group="4"/> -->
-        
-        
-        
+    <body name="payload" pos="0 0 .38">
+        <geom type="box" size=".075 .055 .045" rgba=".5 .4 .3 1"/>
+        <geom type="box" size=".075 .055 .045" rgba=".5 .4 .3 1" group="4" mass="0.05"/>
         <site name="payload" type="sphere" size=".005" pos="0 0 .02"/>
-
         <freejoint/>
     </body>
+
+    <!-- <body name="payload" pos="0 0 .41">
+        <geom type="cylinder" size=".035 .075" rgba=".5 .4 .3 1"/>
+        <geom type="cylinder" size=".035 .075" rgba=".5 .4 .3 1" group="4"  mass="0.05"/>
+        <site name="payload" type="sphere" size=".005" pos="0 0 .02"/>
+        <freejoint/>
+    </body> -->
+
   </worldbody>
 </mujoco>
